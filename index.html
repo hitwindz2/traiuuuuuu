@@ -4,12 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Christmas Tree | Creative Tech Demo</title>
+    <title>Christmas Tree | Special Edition</title>
 
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Great+Vibes&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Great+Vibes&display=swap"
         rel="stylesheet">
 
     <style>
@@ -60,63 +59,14 @@
             width: 100%;
             text-align: center;
             font-family: 'Cinzel', serif;
-            font-size: 40px;
-            letter-spacing: 8px;
+            font-size: 30px;
+            letter-spacing: 5px;
             margin: 0;
             font-weight: 400;
             color: var(--gold);
             text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
             z-index: 10;
             opacity: 0.8;
-        }
-
-        /* Upload Control */
-        .upload-wrapper {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
-            pointer-events: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .btn-glass {
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 215, 0, 0.3);
-            color: var(--gold);
-            padding: 12px 30px;
-            font-family: 'Cinzel', serif;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            outline: none;
-            border-radius: 2px;
-        }
-
-        .btn-glass:hover {
-            background: rgba(255, 215, 0, 0.1);
-            border-color: var(--gold);
-            box-shadow: 0 0 25px rgba(255, 215, 0, 0.2);
-        }
-
-        .hint-text {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.4);
-            letter-spacing: 2px;
-            font-family: 'Cinzel', serif;
-            text-transform: uppercase;
-        }
-
-        input[type="file"] {
-            display: none;
         }
 
         /* Loading Screen */
@@ -183,7 +133,6 @@
         }
     </style>
 
-    <!-- Import Map -->
     <script type="importmap">
         {
             "imports": {
@@ -204,17 +153,8 @@
 
     <div id="ui-layer">
         <h1>MERRY CHRISTMAS</h1>
-
-        <div class="upload-wrapper">
-            <label class="btn-glass">
-                Upload Memories
-                <input type="file" id="photo-input" accept="image/*" multiple>
-            </label>
-            <div class="hint-text">Hold Pinch to View • Open Hand to Scatter • Fist to Transform</div>
         </div>
-    </div>
 
-    <!-- Hand Tracking Cursor -->
     <div id="hand-cursor"></div>
 
     <div id="canvas-container"></div>
@@ -242,7 +182,7 @@
             },
             treeHeight: 28,
             treeMaxRadius: 11,
-            particleCount: 5000, // Increased density
+            particleCount: 5000, 
             snowCount: 1500
         };
 
@@ -285,7 +225,7 @@
         // Post Processing
         const renderScene = new RenderPass(scene, camera);
         const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
-        bloomPass.strength = 0.7; // Slightly higher for that "hazy" star effect
+        bloomPass.strength = 0.7; 
         bloomPass.radius = 0.6;
         bloomPass.threshold = 0.9;
 
@@ -297,12 +237,10 @@
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.1);
         scene.add(ambientLight);
 
-        // Warm internal glow
         const innerLight = new THREE.PointLight(0xffaa00, 5, 40);
         innerLight.position.set(0, 5, 0);
         scene.add(innerLight);
 
-        // Spotlight
         const spotGold = new THREE.SpotLight(0xffd700, 500);
         spotGold.position.set(20, 30, 30);
         spotGold.angle = 0.4;
@@ -314,20 +252,19 @@
         // Geometries
         const geoSphere = new THREE.SphereGeometry(1, 12, 12); 
         const geoDiamond = new THREE.OctahedronGeometry(1, 1);
-        const geoHitPlane = new THREE.PlaneGeometry(3.5, 3.5); // Large hit area
+        // HACK: Increased hitbox size from 3.5 to 6.0 for "Magnet" effect
+        const geoHitPlane = new THREE.PlaneGeometry(6.0, 6.0); 
         
-        // Custom 5-Pointed Star Geometry
         function createStarGeometry() {
             const shape = new THREE.Shape();
             const points = 5;
-            const outerRadius = 1.5; // Slightly larger for emphasis
+            const outerRadius = 1.5; 
             const innerRadius = 0.7;
             const angleStep = Math.PI / points;
             
             for(let i = 0; i < points * 2; i++) {
                 const r = (i % 2 === 0) ? outerRadius : innerRadius;
                 const a = i * angleStep;
-                // Rotate -PI/2 so top point is straight up
                 const x = Math.cos(a - Math.PI/2) * r;
                 const y = Math.sin(a - Math.PI/2) * r;
                 if(i===0) shape.moveTo(x, y);
@@ -370,12 +307,11 @@
             toneMapped: false
         });
 
-        // Hazy Star Material
         const matStar = new THREE.MeshStandardMaterial({
             color: 0xffffff,
             emissive: 0xffd700,
-            emissiveIntensity: 4.0, // High intensity for bloom/haze
-            roughness: 0.4, // Scattering light
+            emissiveIntensity: 4.0, 
+            roughness: 0.4, 
             toneMapped: false
         });
 
@@ -383,7 +319,6 @@
         const geoFrame = new THREE.BoxGeometry(1.6, 1.1, 0.05);
         const geoPhotoPlane = new THREE.PlaneGeometry(1.4, 0.9);
 
-        // Invisible material for Hit Box
         const matHitBox = new THREE.MeshBasicMaterial({
             transparent: true,
             opacity: 0.0,
@@ -391,22 +326,25 @@
             side: THREE.DoubleSide
         });
 
-        // --- TEXT GENERATION ---
-        function generateTextPositions(text) {
+        // --- TEXT GENERATION (UPDATED) ---
+        function generateTextPositions() {
             const positions = [];
             const canvas = document.createElement('canvas');
-            const cw = 2048; const ch = 1024; // Doubled height for 2 lines
+            const cw = 2048; const ch = 1024; 
             canvas.width = cw; canvas.height = ch;
             const ctx = canvas.getContext('2d');
             ctx.fillStyle = '#000000'; ctx.fillRect(0, 0, cw, ch);
             ctx.fillStyle = '#ffffff';
-            ctx.font = '900 200px "Cinzel", serif'; 
+            
+            // Adjusted font size to fit long text
+            ctx.font = '900 130px "Cinzel", serif'; 
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             
-            // Hardcoded split for better layout control
-            ctx.fillText("MERRY", cw / 2, ch * 0.3);
-            ctx.fillText("CHRISTMAS", cw / 2, ch * 0.7);
+            // New Text Layout: 3 Lines
+            ctx.fillText("merry christmas", cw / 2, ch * 0.25);
+            ctx.fillText("happy happy3>", cw / 2, ch * 0.5);
+            ctx.fillText("TTOI YEU CỤA ANH", cw / 2, ch * 0.75);
 
             const data = ctx.getImageData(0, 0, cw, ch).data;
             const step = 4;
@@ -415,10 +353,9 @@
                 for (let x = 0; x < cw; x += step) {
                     const idx = (y * cw + x) * 4;
                     if (data[idx] > 100) {
-                        // Width scale: 30 (CHRISTMAS fits nicely)
-                        const px = (x / cw - 0.5) * 30; 
-                        // Height scale: 24 (spreads lines vertically)
-                        // Offset +2 to center it vertically relative to camera
+                        // Width scale: 35 (Wider for long text)
+                        const px = (x / cw - 0.5) * 35; 
+                        // Height scale: 24 
                         const py = -(y / ch - 0.5) * 24 + 2; 
                         positions.push(new THREE.Vector3(px, py, 0));
                     }
@@ -427,7 +364,7 @@
             return positions;
         }
 
-        const textPositions = generateTextPositions("MERRY CHRISTMAS");
+        const textPositions = generateTextPositions();
 
         // --- PARTICLE CREATION ---
         function createParticle(type, customTex = null) {
@@ -435,7 +372,7 @@
             
             if (type === 'STAR') {
                 mesh = new THREE.Mesh(geoStar, matStar);
-                mesh.scale.setScalar(1.2); // Smaller, more proportional star
+                mesh.scale.setScalar(1.2); 
             } else if (type === 'PHOTO') {
                 const group = new THREE.Group();
                 const tex = customTex || createDefaultPhoto();
@@ -449,14 +386,14 @@
                 photoMesh.position.z = 0.03;
                 const frameMesh = new THREE.Mesh(geoFrame, matPhotoFrame);
                 
-                // Add Invisible Hit Box
+                // Invisible Hit Box (Large)
                 const hitMesh = new THREE.Mesh(geoHitPlane, matHitBox);
-                hitMesh.position.z = 0.05; // Slightly in front
+                hitMesh.position.z = 0.05; 
                 hitMesh.userData.isHitBox = true;
 
                 group.add(frameMesh);
                 group.add(photoMesh);
-                group.add(hitMesh); // Added as child 
+                group.add(hitMesh); 
 
                 mesh = group;
                 mesh.userData.isPhoto = true;
@@ -476,7 +413,7 @@
             const i = particles.length;
             const t = i / CONFIG.particleCount; 
             
-            const angle = t * 70 * Math.PI; // Tighter spiral with more particles
+            const angle = t * 70 * Math.PI; 
             const y = (t * CONFIG.treeHeight) - (CONFIG.treeHeight / 2);
             const radius = CONFIG.treeMaxRadius * (1 - t); 
             
@@ -513,7 +450,7 @@
                 treeRot.set(0, -pAngle + Math.PI / 2, (Math.random() - 0.5) * 0.2);
             }
 
-            // Text Position - evenly distributed
+            // Text Position
             const textIdx = Math.floor((i / CONFIG.particleCount) * textPositions.length);
             const safeTextIdx = textPositions.length > 0 ? (textIdx % textPositions.length) : 0;
             const textPos = textPositions.length > 0 ? textPositions[safeTextIdx].clone() : new THREE.Vector3(0, 0, 0);
@@ -556,7 +493,7 @@
         function initContent() {
             const textureLoader = new THREE.TextureLoader();
 
-            // 1. Create the STAR (Index 0)
+            // 1. Create the STAR
             createParticle('STAR');
 
             // 2. Load images logic
@@ -631,23 +568,6 @@
             snowParticles.push(system);
         }
         initSnow();
-
-        // --- EVENTS ---
-        const fileInput = document.getElementById('photo-input');
-        fileInput.addEventListener('change', (e) => {
-            const files = e.target.files;
-            if (!files.length) return;
-            Array.from(files).forEach(f => {
-                const reader = new FileReader();
-                reader.onload = (ev) => {
-                    new THREE.TextureLoader().load(ev.target.result, (t) => {
-                        t.colorSpace = THREE.SRGBColorSpace;
-                        addPhotoToScene(t);
-                    });
-                };
-                reader.readAsDataURL(f);
-            });
-        });
 
         // --- VISION & LOGIC ---
         let visionModel = null;
@@ -751,23 +671,25 @@
             else {
                 STATE.isFistHeld = false;
 
-                if (pinchDist < 0.05) { 
+                // TWEAK: Increased pinch sensitivity from 0.05 to 0.08
+                if (pinchDist < 0.08) { 
                     if (STATE.mode !== 'FOCUS' && now - STATE.lastGestureTime > 500) {
                          findClosestPhoto();
                     }
                 } 
                 // Priority 3: Fallback / Open Hand / Release Pinch
                 else { 
-                    if (STATE.mode === 'FOCUS') {
-                        STATE.mode = 'SCATTER';
-                    } 
-                    else if (avgTipDist > 0.4) { 
-                        if (STATE.mode !== 'SCATTER' && now - STATE.lastGestureTime > 1000) {
-                            if (STATE.mode === 'TREE' || STATE.mode === 'TEXT') {
-                                 STATE.savedMode = STATE.mode;
+                    // TWEAK: Lock Focus Mode. Open Hand does NOT exit Focus.
+                    // Only switch to SCATTER if we are NOT in FOCUS mode.
+                    if (STATE.mode !== 'FOCUS') {
+                        if (avgTipDist > 0.4) { 
+                            if (STATE.mode !== 'SCATTER' && now - STATE.lastGestureTime > 1000) {
+                                if (STATE.mode === 'TREE' || STATE.mode === 'TEXT') {
+                                    STATE.savedMode = STATE.mode;
+                                }
+                                STATE.mode = 'SCATTER';
+                                STATE.lastGestureTime = now;
                             }
-                            STATE.mode = 'SCATTER';
-                            STATE.lastGestureTime = now;
                         }
                     }
                 }
@@ -804,8 +726,6 @@
                 mainGroup.rotation.y += (STATE.handRotation.y - mainGroup.rotation.y) * 0.05;
                 mainGroup.rotation.x += (STATE.handRotation.x - mainGroup.rotation.x) * 0.05;
             } else if (STATE.mode === 'TEXT') {
-                // FIXED: Text mode no longer auto-rotates
-                // Smoothly reset rotation to face front (0,0)
                 mainGroup.rotation.y += (0 - mainGroup.rotation.y) * 0.05;
                 mainGroup.rotation.x += (0 - mainGroup.rotation.x) * 0.05;
             }
